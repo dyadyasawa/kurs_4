@@ -26,13 +26,13 @@ class HeadHunterApi(WorkApi):
 
         url = 'http://api.hh.ru/vacancies'
 
-        response = requests.get(f"{url}?text=name:{prof} AND {area}").json()
+        dict_info = requests.get(f"{url}?text=name:{prof} AND {area}").json()
 
-        with open('../data/hh_vacancies.json', 'w', encoding=('UTF-8')) as file:
-            json.dump(response, file, ensure_ascii=False, indent=4)
-
-        with open('../data/hh_vacancies.json', 'r', encoding=('UTF-8')) as file:
-            dict_info = json.load(file)
+        # with open('../data/hh_vacancies.json', 'w', encoding=('UTF-8')) as file:
+        #     json.dump(response, file, ensure_ascii=False, indent=4)
+        #
+        # with open('../data/hh_vacancies.json', 'r', encoding=('UTF-8')) as file:
+        #     dict_info = json.load(file)
         return dict_info['items']
 
 
@@ -56,6 +56,7 @@ class HeadHunterApi(WorkApi):
                     'name': vacancy['name'],
                     'salary_from ': vacancy['salary']['from'],
                     'salary_to': vacancy['salary']['to'],
+                    'currency': vacancy['salary']['currency'],
                     'description': vacancy['snippet']['responsibility'],
                     'url': vacancy['employer']['alternate_url']
                 })
@@ -72,6 +73,25 @@ class SuperJobApi(WorkApi):
         """ Метод для выборки вакансий по заданным параметрам с sj.ru. """
         pass
 
+
+class Vacancies:
+    """ Класс для работы с вакансиями """
+    def __init__(self, name, salary_from, salary_to, currency, description, url):
+        self.name = name
+        self.salary_from = salary_from
+        self.salary_to = salary_to
+        self.currency = currency
+        self.description = description
+        self.url = url
+
+    def __str__(self):
+        return (f"Профессия: {self.name}"
+                f"Зарплата от {self.salary_from} до {self.salary_to} {self.currency}"
+                f"Обязанности: {self.description}"
+                f"Ссылка: {self.url}")
+
+    def __lt__(self, other):
+        return self.salary_from < other.salary_from
 
 h1 = HeadHunterApi()
 print(h1.get_choice_vacancies('швея',  'краснодар'))
