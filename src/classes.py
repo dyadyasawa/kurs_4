@@ -93,5 +93,29 @@ class Vacancies:
     def __lt__(self, other):
         return self.salary_from < other.salary_from
 
+
+class DataJson:
+    """ Класс для сохранения данных в json-файл """
+    def write_vacancies_to_json(self, data_list):
+        """ Метод для создания json-файла и записи в него данных """
+        with open('../data/vacancies_hh.json', "w", encoding=('utf-8')) as file:
+            json.dump(data_list, file, ensure_ascii=False, indent=4)
+
+    def read_vacancies_from_json(self):
+        """ Метод для создания экземпляров класса из json-файла """
+        with open('../data/vacancies_hh.json', 'r', encoding=('utf-8') ) as file:
+            vacancies = json.load(file)
+
+        list_vacancies = []
+        for item in vacancies:
+            list_vacancies.append(Vacancies(item['name'],
+                                            item['salary']['salary_from'],
+                                            item['salary']['salary_to'],
+                                            item['salary']['currency'],
+                                            item['snippet']['responsibility'],
+                                            item['employer']['alternate_url']))
+            return list_vacancies
+
+
 h1 = HeadHunterApi()
 print(h1.get_choice_vacancies('швея',  'краснодар'))
