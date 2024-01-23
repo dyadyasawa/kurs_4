@@ -49,7 +49,7 @@ class HeadHunterApi(WorkApi):
             else:
                 vacancies.append({
                     'name': vacancy['name'],
-                    'salary_from ': vacancy['salary']['from'],
+                    'salary_from': vacancy['salary']['from'],
                     'salary_to': vacancy['salary']['to'],
                     'currency': vacancy['salary']['currency'],
                     'description': vacancy['snippet']['responsibility'],
@@ -80,16 +80,16 @@ class Vacancies:
         self.url = url
 
     def __str__(self):
-        return (f"Профессия: {self.name}"
-                f"Зарплата от {self.salary_from} до {self.salary_to} {self.currency}"
-                f"Обязанности: {self.description}"
-                f"Ссылка: {self.url}")
+        return (f"Профессия: {self.name}\n"
+                f"Зарплата от {self.salary_from} до {self.salary_to} {self.currency}\n"
+                f"Обязанности: {self.description}\n"
+                f"Ссылка: {self.url}\n")
 
     def __lt__(self, other):
         return self.salary_from < other.salary_from
 
 
-class DataJson:
+class SaveToJson:
     """ Класс для сохранения данных в json-файл """
     def write_vacancies_to_json(self, data_list):
         """ Метод для создания json-файла и записи в него данных """
@@ -104,9 +104,9 @@ class DataJson:
         list_vacancies = []
         for item in vacancies:
             list_vacancies.append(Vacancies(item['name'],
-                                            item['salary']['salary_from'],
-                                            item['salary']['salary_to'],
-                                            item['salary']['currency'],
-                                            item['snippet']['responsibility'],
-                                            item['employer']['alternate_url']))
-            return list_vacancies
+                                            item['salary_from'],
+                                            item['salary_to'],
+                                            item['currency'],
+                                            item['description'],
+                                            item['url']))
+        return list_vacancies
