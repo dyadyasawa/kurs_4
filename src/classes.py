@@ -28,11 +28,6 @@ class HeadHunterApi(WorkApi):
 
         dict_info = requests.get(f"{url}?text=name:{prof} AND {area}").json()
 
-        # with open('../data/hh_vacancies.json', 'w', encoding=('UTF-8')) as file:
-        #     json.dump(response, file, ensure_ascii=False, indent=4)
-        #
-        # with open('../data/hh_vacancies.json', 'r', encoding=('UTF-8')) as file:
-        #     dict_info = json.load(file)
         return dict_info['items']
 
 
@@ -98,12 +93,12 @@ class DataJson:
     """ Класс для сохранения данных в json-файл """
     def write_vacancies_to_json(self, data_list):
         """ Метод для создания json-файла и записи в него данных """
-        with open('../data/vacancies_hh.json', "w", encoding=('utf-8')) as file:
+        with open('data/vacancies_hh.json', "w", encoding=('utf-8')) as file:
             json.dump(data_list, file, ensure_ascii=False, indent=4)
 
     def read_vacancies_from_json(self):
         """ Метод для создания экземпляров класса из json-файла """
-        with open('../data/vacancies_hh.json', 'r', encoding=('utf-8') ) as file:
+        with open('data/vacancies_hh.json', 'r', encoding=('utf-8') ) as file:
             vacancies = json.load(file)
 
         list_vacancies = []
@@ -115,7 +110,3 @@ class DataJson:
                                             item['snippet']['responsibility'],
                                             item['employer']['alternate_url']))
             return list_vacancies
-
-
-h1 = HeadHunterApi()
-print(h1.get_choice_vacancies('швея',  'краснодар'))
