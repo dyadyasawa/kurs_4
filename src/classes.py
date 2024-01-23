@@ -26,21 +26,36 @@ class HeadHunterApi(WorkApi):
 
         url = 'http://api.hh.ru/vacancies'
 
-        response = requests.get(f"{url}?text=name:!{prof} AND !{area}").json()
+        dict_info = requests.get(f"{url}?text=name:{prof} AND {area}").json()
 
-        with open('data/hh_vacancies.json', 'w', encoding=('UTF-8')) as file:
-            json.dump(response, file, ensure_ascii=False, indent=4)
-
-        with open('data/hh_vacancies.json', 'r', encoding=('UTF-8')) as file:
-            dict_info = json.load(file)
-        return dict_info
+        return dict_info['items']
 
 
     def get_choice_vacancies(self, prof, area):
         """ Метод для выборки вакансий по заданным параметрам с hh.ru. """
 
-        dict_vacancies = self.get_vacancies(prof, area)
+        list_vacancies = self.get_vacancies(prof, area)
+        vacancies = []
+        for vacancy in list_vacancies:
+            if vacancy['salary'] == None:
+                continue
 
+            elif vacancy['salary']['from'] == None:
+                continue
+
+            elif vacancy['salary']['to'] == None:
+                continue
+
+            else:
+                vacancies.append({
+                    'name': vacancy['name'],
+                    'salary_from ': vacancy['salary']['from'],
+                    'salary_to': vacancy['salary']['to'],
+                    'currency': vacancy['salary']['currency'],
+                    'description': vacancy['snippet']['responsibility'],
+                    'url': vacancy['employer']['alternate_url']
+                })
+        return vacancies
 
 class SuperJobApi(WorkApi):
     """ Класс для работы с вакансиями через API сайта sj.ru. """
@@ -52,3 +67,46 @@ class SuperJobApi(WorkApi):
     def get_choice_vacancies_sj(self):
         """ Метод для выборки вакансий по заданным параметрам с sj.ru. """
         pass
+
+
+class Vacancies:
+    """ Класс для работы с вакансиями """
+    def __init__(self, name, salary_from, salary_to, currency, description, url):
+        self.name = name
+        self.salary_from = salary_from
+        self.salary_to = salary_to
+        self.currency = currency
+        self.description = description
+        self.url = url
+
+    def __str__(self):
+        return (f"Профессия: {self.name}"
+                f"Зарплата от {self.salary_from} до {self.salary_to} {self.currency}"
+                f"Обязанности: {self.description}"
+                f"Ссылка: {self.url}")
+
+    def __lt__(self, other):
+        return self.salary_from < other.salary_from
+
+
+class DataJson:
+    """ Класс для сохранения данных в json-файл """
+    def write_vacancies_to_json(self, data_list):
+        """ Метод для создания json-файла и записи в него данных """
+        with open('data/vacancies_hh.json', "w", encoding=('utf-8')) as file:
+            json.dump(data_list, file, ensure_ascii=False, indent=4)
+
+    def read_vacancies_from_json(self):
+        """ Метод для создания экземпляров класса из json-файла """
+        with open('data/vacancies_hh.json', 'r', encoding=('utf-8') ) as file:
+            vacancies = json.load(file)
+
+        list_vacancies = []
+        for item in vacancies:
+            list_vacancies.append(Vacancies(item['name'],
+                                            item['salary']['salary_from'],
+                                            item['salary']['salary_to'],
+                                            item['salary']['currency'],
+                                            item['snippet']['responsibility'],
+                                            item['employer']['alternate_url']))
+            return list_vacancies
