@@ -1,12 +1,16 @@
 
-from src.classes import HeadHunterApi, Vacancies, DataJson
+from src.classes import HeadHunterApi, SaveToJson
 
 profession = input('По какой профессии вывести вакансии?  >>>  ')
 area = input('В каком регионе?  >>>  ')
+print()
 
-hh1 = HeadHunterApi()
-dj1 = DataJson()
+hh = HeadHunterApi()
+save_json = SaveToJson()
 
-# print(hh1.get_choice_vacancies(profession, area))
+save_json.write_vacancies_to_json(hh.get_choice_vacancies(profession, area))
+list_vacancies = save_json.read_vacancies_from_json()
 
-print(dj1.write_vacancies_to_json(hh1.get_choice_vacancies(profession, area)))
+for ex in sorted(list_vacancies, reverse=True):
+    print(ex)
+
