@@ -12,6 +12,7 @@ def interaction_with_user():
         letter = input("С какой платформы желаете получить данные? (h - hh.ru  s - superjob.ru  q - выход) >>>  ")
         if letter.lower() == 'h':
             profession = input("По какой профессии вывести вакансии?: ")
+            print()
             hh = HeadHunterApi()
             save_json = SaveToJson()
 

@@ -61,22 +61,24 @@ class HeadHunterApi(WorkApi):
                 })
         return vacancies
 
+
 class SuperJobApi(WorkApi):
-    """ Класс для работы с вакансиями через API сайта sj.ru. """
+    """ Класс для работы с вакансиями через API сайта superjob.ru. """
+    pass
 
     def get_vacancies(self, prof):
-        """ Метод для подключения к API и получения вакансий с sj.ru. """
+        """ Метод для подключения к API и получения вакансий с superjob.ru. """
 
-        headers = {'X-Api-App-Id': 'v3.r.138063962.7e0c658ab688b2253b612e926fc273075f1049a0.04f76deb831d357684d078281127c231188a7b68'} # os.getenv('SJ_API_KEY')}
+        api_key = os.getenv('SJ_API_KEY')
+        headers = {'X-Api-App-Id': api_key}
         params = {'keyword': prof}
-        url = 'http://api.superjob.ru/2.0/vacancies/'
-        # id_sj = 3312
+        url = 'http://api.superjob.ru/2.20/vacancies/'
 
         response = requests.get(url, params=params, headers=headers).json()
         return response
 
     def get_choice_vacancies(self, prof):
-        """ Метод для выборки вакансий по заданным параметрам с sj.ru. """
+        """ Метод для выборки вакансий по заданным параметрам с superjob.ru. """
         pass
 
 
@@ -127,4 +129,12 @@ class SaveToJson:
 
 
 sj = SuperJobApi()
-print(sj.get_vacancies('швея'))
+print(sj.get_vacancies('токарь'))
+
+# api_key = os.getenv('SJ_API_KEY')
+# headers = {'X-Api-App-Id': api_key}
+# params = {'keyword': 'токарь'}
+# url = 'https://api.superjob.ru/2.0/vacancies/'
+#
+# response = requests.get(url, params=params, headers=headers).json()
+# print(response)
