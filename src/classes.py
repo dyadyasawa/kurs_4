@@ -3,7 +3,7 @@ import json
 import requests
 from abc import ABC, abstractmethod
 import os
-# secret_key = 'v3.r.138063962.7e0c658ab688b2553b612e962fc273075f1049a0.04f76deb831d357684d078281127c231188a7b68'
+# secret_key = 'v3.r.138063962.7e0c658ab688b2253b612e926fc273075f1049a0.04f76deb831d357684d078281127c231188a7b68'
 
 
 class WorkApi(ABC):
@@ -67,7 +67,7 @@ class SuperJobApi(WorkApi):
     def get_vacancies(self, prof):
         """ Метод для подключения к API и получения вакансий с sj.ru. """
 
-        headers = {'X-Api-App-Id': 'v3.r.138063962.7e0c658ab688b2553b612e962fc273075f1049a0.04f76deb831d357684d078281127c231188a7b68'}  # os.getenv('SJ_API_KEY')}
+        headers = {'X-Api-App-Id': 'v3.r.138063962.7e0c658ab688b2253b612e926fc273075f1049a0.04f76deb831d357684d078281127c231188a7b68'} # os.getenv('SJ_API_KEY')}
         params = {'keyword': prof}
         url = 'http://api.superjob.ru/2.0/vacancies/'
         # id_sj = 3312
