@@ -1,6 +1,7 @@
 
 from src.classes import HeadHunterApi, SaveToJson
 
+
 def interaction_with_user():
     """ Функция для взаимодействия с пользователем. """
 
@@ -20,23 +21,25 @@ def interaction_with_user():
                 for ex in sorted(list_vacancies):
                     print(ex)
 
+                print()
                 print(f"Вакансии отсортированы по зарплате, от большей к меньшей.\n"
                       f"Была выведена страница {HeadHunterApi.page} из {hh.get_vacancies(profession)[1]}.\n")
-                value = input("Выберите номер страницы для ее просмотра или q для выхода:  ")
-                if value.lower() == 'q':
-                    quit()
+                trigger = 0
+                while trigger == 0:
+                    value = input("Выберите номер страницы для ее просмотра или q для выхода:  ")
+                    print()
+                    if value.lower() == 'q':
+                        quit()
 
-                elif value.isdigit() is not True:
-                    print("Введено некорректное значение.")
-                    quit()
+                    elif value.isdigit() is not True:
+                        print("Введите корректное значение.")
 
-                elif int(value) > hh.get_vacancies(profession)[1]:
-                    print("Введено некорректное значение.")
-                    quit()
+                    elif int(value) > hh.get_vacancies(profession)[1]:
+                        print("Введите корректное значение.")
 
-                else:
-                    HeadHunterApi.page = int(value)
-
+                    else:
+                        HeadHunterApi.page = int(value)
+                        trigger = 1
 
         elif letter.lower() == 's':
             pass
