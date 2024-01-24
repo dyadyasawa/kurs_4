@@ -14,32 +14,38 @@ def interaction_with_user():
             profession = input("По какой профессии вывести вакансии?: ")
             hh = HeadHunterApi()
             save_json = SaveToJson()
-            while True:
+
+            switch = 0
+            while switch == 0:
                 save_json.write_vacancies_to_json(hh.get_choice_vacancies(profession))
                 list_vacancies = save_json.read_vacancies_from_json()
+                if len(list_vacancies) == 0:
+                    print("Увы, по заданной профессии вакансий не найдено. Попробуйте ввести другие данные.")
+                    switch = 1
+                else:
+                    for ex in sorted(list_vacancies, reverse=True):
+                        print(ex)
 
-                for ex in sorted(list_vacancies, reverse=True):
-                    print(ex)
-
-                print()
-                print(f"Вакансии отсортированы по зарплате, от большей к меньшей.\n"
-                      f"Была выведена страница {HeadHunterApi.page} из {hh.get_vacancies(profession)[1]}.\n")
-                switch = 0
-                while switch == 0:
-                    value = input("Выберите номер страницы для ее просмотра или q для выхода:  ")
                     print()
-                    if value.lower() == 'q':
-                        quit()
+                    print(f"Вакансии отсортированы по зарплате, от большей к меньшей.\n"
+                          f"Была выведена страница {HeadHunterApi.page} из {hh.get_vacancies(profession)[1]}.\n")
 
-                    elif value.isdigit() is not True:
-                        print("Введите корректное значение.")
+                    switch1 = 0
+                    while switch1 == 0:
+                        value = input("Выберите номер страницы для ее просмотра или q для выхода:  ")
+                        print()
+                        if value.lower() == 'q':
+                            quit()
 
-                    elif int(value) > hh.get_vacancies(profession)[1]:
-                        print("Введите корректное значение.")
+                        elif value.isdigit() is not True:
+                            print("Введите корректное значение.")
 
-                    else:
-                        HeadHunterApi.page = int(value)
-                        switch = 1
+                        elif int(value) > hh.get_vacancies(profession)[1]:
+                            print("Введите корректное значение.")
+
+                        else:
+                            HeadHunterApi.page = int(value)
+                            switch1 = 1
 
         elif letter.lower() == 's':
             pass
