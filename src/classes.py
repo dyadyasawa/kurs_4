@@ -21,20 +21,21 @@ class WorkApi(ABC):
 class HeadHunterApi(WorkApi):
     """ Класс для работы с вакансиями через API сайта hh.ru. """
 
+    page = 1
     def get_vacancies(self, prof):
         """ Метод для подключения к API и получения вакансий с hh.ru. """
 
         url = 'http://api.hh.ru/vacancies'
 
-        dict_info = requests.get(f"{url}?text=name:{prof}&area=113").json()
+        dict_info = requests.get(f"{url}?text=name:{prof}&area=113&page={self.page - 1}").json()
 
-        return dict_info['items']
+        return dict_info['items'], dict_info['pages']
 
 
     def get_choice_vacancies(self, prof):
         """ Метод для выборки вакансий по заданным параметрам с hh.ru. """
 
-        list_vacancies = self.get_vacancies(prof)
+        list_vacancies = self.get_vacancies(prof)[0]
         vacancies = []
         for vacancy in list_vacancies:
             if vacancy['salary'] == None:

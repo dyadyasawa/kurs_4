@@ -13,3 +13,4 @@ list_vacancies = save_json.read_vacancies_from_json()
 for ex in sorted(list_vacancies):
     print(ex)
 
+print(f"Была выведена страница {HeadHunterApi.page} из {hh.get_vacancies(profession)[1]}.")
