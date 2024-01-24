@@ -18,14 +18,14 @@ def interaction_with_user():
                 save_json.write_vacancies_to_json(hh.get_choice_vacancies(profession))
                 list_vacancies = save_json.read_vacancies_from_json()
 
-                for ex in sorted(list_vacancies):
+                for ex in sorted(list_vacancies, reverse=True):
                     print(ex)
 
                 print()
                 print(f"Вакансии отсортированы по зарплате, от большей к меньшей.\n"
                       f"Была выведена страница {HeadHunterApi.page} из {hh.get_vacancies(profession)[1]}.\n")
-                trigger = 0
-                while trigger == 0:
+                switch = 0
+                while switch == 0:
                     value = input("Выберите номер страницы для ее просмотра или q для выхода:  ")
                     print()
                     if value.lower() == 'q':
@@ -39,7 +39,7 @@ def interaction_with_user():
 
                     else:
                         HeadHunterApi.page = int(value)
-                        trigger = 1
+                        switch = 1
 
         elif letter.lower() == 's':
             pass

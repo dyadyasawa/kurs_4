@@ -89,8 +89,8 @@ class Vacancies:
                 f"Обязанности: {self.description}\n"
                 f"Ссылка: {self.url}\n")
 
-    def __lt__(self, other):
-        return self.salary_from < other.salary_from
+    def __gt__(self, other):
+        return self.salary_from > other.salary_from
 
 
 class SaveToJson:
