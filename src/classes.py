@@ -2,18 +2,20 @@
 import json
 import requests
 from abc import ABC, abstractmethod
+import os
+# secret_key = 'v3.r.138063962.7e0c658ab688b2253b612e926fc273075f1049a0.04f76deb831d357684d078281127c231188a7b68'
 
 
 class WorkApi(ABC):
     """ Абстрактный класс для работы с API сайтов с вакансиями. """
 
     @abstractmethod
-    def get_vacancies(self, prof, area):
+    def get_vacancies(self, prof):
         """ Абстрактный метод для подключения к API и получения вакансий. Реализуется в дочерних классах. """
         pass
 
     @abstractmethod
-    def get_choice_vacancies(self, prof, area):
+    def get_choice_vacancies(self, prof):
         """ Абстрактный метод для выборки вакансий по заданным параметрам. Реализуется в дочерних классах. """
         pass
 
@@ -21,20 +23,21 @@ class WorkApi(ABC):
 class HeadHunterApi(WorkApi):
     """ Класс для работы с вакансиями через API сайта hh.ru. """
 
-    def get_vacancies(self, prof, area):
+    page = 1
+    def get_vacancies(self, prof):
         """ Метод для подключения к API и получения вакансий с hh.ru. """
 
         url = 'http://api.hh.ru/vacancies'
 
-        dict_info = requests.get(f"{url}?text=name:{prof} AND {area}").json()
+        dict_info = requests.get(f"{url}?text=name:{prof}&area=113&page={self.page - 1}").json()
 
-        return dict_info['items']
+        return dict_info['items'], dict_info['pages']
 
 
-    def get_choice_vacancies(self, prof, area):
+    def get_choice_vacancies(self, prof):
         """ Метод для выборки вакансий по заданным параметрам с hh.ru. """
 
-        list_vacancies = self.get_vacancies(prof, area)
+        list_vacancies = self.get_vacancies(prof)[0]
         vacancies = []
         for vacancy in list_vacancies:
             if vacancy['salary'] == None:
@@ -49,6 +52,7 @@ class HeadHunterApi(WorkApi):
             else:
                 vacancies.append({
                     'name': vacancy['name'],
+                    'area': vacancy['area']['name'],
                     'salary_from': vacancy['salary']['from'],
                     'salary_to': vacancy['salary']['to'],
                     'currency': vacancy['salary']['currency'],
@@ -57,22 +61,32 @@ class HeadHunterApi(WorkApi):
                 })
         return vacancies
 
+
 class SuperJobApi(WorkApi):
-    """ Класс для работы с вакансиями через API сайта sj.ru. """
+    """ Класс для работы с вакансиями через API сайта superjob.ru. """
+    pass
 
-    def get_vacancies_sj(self):
-        """ Метод для подключения к API и получения вакансий с sj.ru. """
-        pass
+    def get_vacancies(self, prof):
+        """ Метод для подключения к API и получения вакансий с superjob.ru. """
 
-    def get_choice_vacancies_sj(self):
-        """ Метод для выборки вакансий по заданным параметрам с sj.ru. """
+        api_key = os.getenv('SJ_API_KEY')
+        headers = {'X-Api-App-Id': api_key}
+        params = {'keyword': prof}
+        url = 'http://api.superjob.ru/2.20/vacancies/'
+
+        response = requests.get(url, params=params, headers=headers).json()
+        return response
+
+    def get_choice_vacancies(self, prof):
+        """ Метод для выборки вакансий по заданным параметрам с superjob.ru. """
         pass
 
 
 class Vacancies:
     """ Класс для работы с вакансиями """
-    def __init__(self, name, salary_from, salary_to, currency, description, url):
+    def __init__(self, name, area, salary_from, salary_to, currency, description, url):
         self.name = name
+        self.area = area
         self.salary_from = salary_from
         self.salary_to = salary_to
         self.currency = currency
@@ -81,12 +95,13 @@ class Vacancies:
 
     def __str__(self):
         return (f"Профессия: {self.name}\n"
+                f"Место: {self.area}\n"
                 f"Зарплата от {self.salary_from} до {self.salary_to} {self.currency}\n"
                 f"Обязанности: {self.description}\n"
                 f"Ссылка: {self.url}\n")
 
-    def __lt__(self, other):
-        return self.salary_from < other.salary_from
+    def __gt__(self, other):
+        return self.salary_from > other.salary_from
 
 
 class SaveToJson:
@@ -104,9 +119,22 @@ class SaveToJson:
         list_vacancies = []
         for item in vacancies:
             list_vacancies.append(Vacancies(item['name'],
+                                            item['area'],
                                             item['salary_from'],
                                             item['salary_to'],
                                             item['currency'],
                                             item['description'],
                                             item['url']))
         return list_vacancies
+
+
+sj = SuperJobApi()
+print(sj.get_vacancies('токарь'))
+
+# api_key = os.getenv('SJ_API_KEY')
+# headers = {'X-Api-App-Id': api_key}
+# params = {'keyword': 'токарь'}
+# url = 'https://api.superjob.ru/2.0/vacancies/'
+#
+# response = requests.get(url, params=params, headers=headers).json()
+# print(response)
