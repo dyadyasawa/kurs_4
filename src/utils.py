@@ -14,12 +14,12 @@ def interaction_with_user():
             profession = input("По какой профессии вывести вакансии?: ")
             print()
             hh = HeadHunterApi()
-            save_json = SaveToJson()
+            save_json_hh = SaveToJson()
 
             switch = 0
             while switch == 0:
-                save_json.write_vacancies_to_json(hh.get_choice_vacancies(profession))
-                list_vacancies = save_json.read_vacancies_from_json()
+                save_json_hh.write_vacancies_to_json(hh.get_choice_vacancies(profession))
+                list_vacancies = save_json_hh.read_vacancies_from_json()
                 if len(list_vacancies) == 0:
                     print("Увы, по заданной профессии вакансий не найдено. Попробуйте ввести другие данные.")
                     switch = 1
@@ -52,12 +52,12 @@ def interaction_with_user():
             profession = input("По какой профессии вывести вакансии?: ")
             print()
             sj = SuperJobApi()
-            save_json = SaveToJson()
+            save_json_sj = SaveToJson()
 
             switch = 0
             while switch == 0:
-                save_json.write_vacancies_to_json(sj.get_choice_vacancies(profession))
-                list_vacancies = save_json.read_vacancies_from_json()
+                save_json_sj.write_vacancies_to_json(sj.get_choice_vacancies(profession))
+                list_vacancies = save_json_sj.read_vacancies_from_json()
                 if len(list_vacancies) == 0:
                     print("Увы, по заданной профессии вакансий не найдено. Попробуйте ввести другие данные.")
                     switch = 1

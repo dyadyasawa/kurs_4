@@ -3,6 +3,7 @@ import json
 import requests
 from abc import ABC, abstractmethod
 import os
+from pprint import pprint
 # secret_key = 'v3.r.138063962.7e0c658ab688b2253b612e926fc273075f1049a0.04f76deb831d357684d078281127c231188a7b68'
 
 
@@ -74,12 +75,25 @@ class SuperJobApi(WorkApi):
         params = {'keyword': prof}
         url = 'http://api.superjob.ru/2.20/vacancies/'
 
-        response = requests.get(url, params=params, headers=headers).json()
-        return response
+        dict_info = requests.get(url, params=params, headers=headers).json()['object']
+        return dict_info
 
     def get_choice_vacancies(self, prof):
         """ Метод для выборки вакансий по заданным параметрам с superjob.ru. """
-        pass
+
+        list_vacancies = self.get_vacancies(prof)
+        vacancies = []
+        for vacancy in list_vacancies:
+            vacancies.append({
+                'name': vacancy['profession'],
+                'area': vacancy['town']['title'],
+                'salary_from': vacancy['payment_from'],
+                'salary_to': vacancy['payment_to'],
+                'currency': vacancy['currency'],
+                'description': vacancy['work'],
+                'url': vacancy['link']
+            })
+        return vacancies
 
 
 class Vacancies:
@@ -127,14 +141,5 @@ class SaveToJson:
                                             item['url']))
         return list_vacancies
 
-
-sj = SuperJobApi()
-print(sj.get_vacancies('токарь'))
-
-# api_key = os.getenv('SJ_API_KEY')
-# headers = {'X-Api-App-Id': api_key}
-# params = {'keyword': 'токарь'}
-# url = 'https://api.superjob.ru/2.0/vacancies/'
-#
-# response = requests.get(url, params=params, headers=headers).json()
-# print(response)
+# sj1 = SuperJobApi()
+# pprint(sj1.get_choice_vacancies('швея'))
