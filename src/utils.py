@@ -1,5 +1,5 @@
 
-from src.classes import HeadHunterApi, SaveToJson
+from src.classes import HeadHunterApi, SuperJobApi, SaveToJson
 
 
 def interaction_with_user():
@@ -14,12 +14,12 @@ def interaction_with_user():
             profession = input("По какой профессии вывести вакансии?: ")
             print()
             hh = HeadHunterApi()
-            save_json = SaveToJson()
+            save_json_hh = SaveToJson()
 
             switch = 0
             while switch == 0:
-                save_json.write_vacancies_to_json(hh.get_choice_vacancies(profession))
-                list_vacancies = save_json.read_vacancies_from_json()
+                save_json_hh.write_vacancies_to_json(hh.get_choice_vacancies(profession))
+                list_vacancies = save_json_hh.read_vacancies_from_json()
                 if len(list_vacancies) == 0:
                     print("Увы, по заданной профессии вакансий не найдено. Попробуйте ввести другие данные.")
                     switch = 1
@@ -49,7 +49,42 @@ def interaction_with_user():
                             switch1 = 1
 
         elif letter.lower() == 's':
-            pass
+            profession = input("По какой профессии вывести вакансии?: ")
+            print()
+            sj = SuperJobApi()
+            save_json_sj = SaveToJson()
+
+            switch = 0
+            while switch == 0:
+                save_json_sj.write_vacancies_to_json(sj.get_choice_vacancies(profession))
+                list_vacancies = save_json_sj.read_vacancies_from_json()
+                if len(list_vacancies) == 0:
+                    print("Увы, по заданной профессии вакансий не найдено. Попробуйте ввести другие данные.")
+                    switch = 1
+                else:
+                    for ex in sorted(list_vacancies, reverse=True):
+                        print(ex)
+
+                    print()
+                    print(f"Вакансии отсортированы по зарплате, от большей к меньшей.\n"
+                          f"Была выведена страница {HeadHunterApi.page} из {sj.get_vacancies(profession)[1]}.\n")
+
+                    switch1 = 0
+                    while switch1 == 0:
+                        value = input("Выберите номер страницы для ее просмотра или q для выхода:  ")
+                        print()
+                        if value.lower() == 'q':
+                            quit()
+
+                        elif value.isdigit() is not True:
+                            print("Введите корректное значение.")
+
+                        elif int(value) > sj.get_vacancies(profession)[1]:
+                            print("Введите корректное значение.")
+
+                        else:
+                            HeadHunterApi.page = int(value)
+                            switch1 = 1
         elif letter.lower() == 'q':
             quit()
         else:
