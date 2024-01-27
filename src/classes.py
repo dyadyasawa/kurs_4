@@ -3,8 +3,6 @@ import json
 import requests
 from abc import ABC, abstractmethod
 import os
-from pprint import pprint
-# secret_key = 'v3.r.138063962.7e0c658ab688b2253b612e926fc273075f1049a0.04f76deb831d357684d078281127c231188a7b68'
 
 
 class WorkApi(ABC):
@@ -25,6 +23,7 @@ class HeadHunterApi(WorkApi):
     """ Класс для работы с вакансиями через API сайта hh.ru. """
 
     page = 1
+
     def get_vacancies(self, prof):
         """ Метод для подключения к API и получения вакансий с hh.ru. """
 
@@ -33,7 +32,6 @@ class HeadHunterApi(WorkApi):
         dict_info = requests.get(f"{url}?text=name:{prof}&area=113&page={self.page - 1}").json()
 
         return dict_info['items'], dict_info['pages']
-
 
     def get_choice_vacancies(self, prof):
         """ Метод для выборки вакансий по заданным параметрам с hh.ru. """
@@ -65,25 +63,31 @@ class HeadHunterApi(WorkApi):
 
 class SuperJobApi(WorkApi):
     """ Класс для работы с вакансиями через API сайта superjob.ru. """
-    pass
+
+    page = 1
 
     def get_vacancies(self, prof):
         """ Метод для подключения к API и получения вакансий с superjob.ru. """
 
         api_key = os.getenv('SJ_API_KEY')
         headers = {'X-Api-App-Id': api_key}
-        params = {'keyword': prof}
+        params = {'keyword': prof, 'count': 40, 'page': self.page - 1}
         url = 'http://api.superjob.ru/2.20/vacancies/'
 
-        dict_info = requests.get(url, params=params, headers=headers).json()['object']
-        return dict_info
+        dict_info = requests.get(url, params=params, headers=headers).json()
+        return dict_info['objects'], dict_info['total']
 
     def get_choice_vacancies(self, prof):
         """ Метод для выборки вакансий по заданным параметрам с superjob.ru. """
 
-        list_vacancies = self.get_vacancies(prof)
+        list_vacancies = self.get_vacancies(prof)[0]
         vacancies = []
         for vacancy in list_vacancies:
+            if vacancy['payment_from'] == 0:
+                continue
+
+            elif vacancy['payment_to'] == 0:
+                continue
             vacancies.append({
                 'name': vacancy['profession'],
                 'area': vacancy['town']['title'],
@@ -120,14 +124,15 @@ class Vacancies:
 
 class SaveToJson:
     """ Класс для сохранения данных в json-файл """
+
     def write_vacancies_to_json(self, data_list):
         """ Метод для создания json-файла и записи в него данных """
-        with open('data/vacancies_hh.json', "w", encoding=('utf-8')) as file:
+        with open('data/vacancies.json', "w", encoding=('utf-8')) as file:
             json.dump(data_list, file, ensure_ascii=False, indent=4)
 
     def read_vacancies_from_json(self):
         """ Метод для создания экземпляров класса из json-файла """
-        with open('data/vacancies_hh.json', 'r', encoding=('utf-8') ) as file:
+        with open('data/vacancies.json', 'r', encoding=('utf-8') ) as file:
             vacancies = json.load(file)
 
         list_vacancies = []
@@ -140,6 +145,3 @@ class SaveToJson:
                                             item['description'],
                                             item['url']))
         return list_vacancies
-
-# sj1 = SuperJobApi()
-# pprint(sj1.get_choice_vacancies('швея'))
